@@ -1,0 +1,155 @@
+.list-container {
+  padding: 20px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header button {
+  padding: 10px 20px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.warning,
+.loading,
+.empty {
+  padding: 40px;
+  text-align: center;
+  color: #666;
+}
+
+.warning {
+  background: #fff3e0;
+  border-left: 4px solid #ff9800;
+  color: #e65100;
+}
+
+.empty button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  background: #1976d2;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.card {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 15px;
+}
+
+.card-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.id {
+  color: #999;
+  font-size: 14px;
+  font-family: monospace;
+}
+
+.card-body > div {
+  margin: 10px 0;
+}
+
+.state {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.state[data-state="0"] {
+  background: #ffebee;
+  color: #c62828;
+}
+
+.state[data-state="1"] {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.state[data-state="2"],
+.state[data-state="3"] {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.state[data-state="4"] {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.role {
+  color: #666;
+  font-size: 14px;
+}
+
+.time {
+  color: #666;
+  font-size: 14px;
+}
+
+.participants {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  font-size: 12px;
+  font-family: monospace;
+  color: #999;
+}
+
+.result {
+  margin-top: 15px;
+  padding: 10px;
+  border-radius: 4px;
+}
+
+.match {
+  color: #2e7d32;
+  background: #e8f5e9;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.no-match {
+  color: #e65100;
+  background: #fff3e0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  display: inline-block;
+}
