@@ -15,6 +15,15 @@
     </div>
   </header>
 
+   <div *ngIf="negotiation$ | async as n">
+      <h3>{{ n.title }}</h3>
+      <p>State: {{ n.state }}</p>
+      <p>Employer: {{ n.employer }}</p>
+      <p>Candidate: {{ n.candidate }}</p>
+      <p>Meeting Point: {{ n.meetingPoint }}</p>
+      <p *ngIf="n.lastError">⚠️ Error: {{ n.lastError }}</p>
+    </div>
+
   <main>
     <router-outlet></router-outlet>
   </main>
@@ -23,4 +32,8 @@
     <p>Powered by Zama FHE • Sepolia Testnet</p>
   </footer>
 </div>
+
+
+
+
 <!-- <router-outlet /> -->

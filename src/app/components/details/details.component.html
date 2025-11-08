@@ -173,7 +173,8 @@
     </div>
 
     <!-- STATE 4 + MATCH FOUND -->
-    <div *ngIf="negotiation.state === 4 && negotiation.matchRevealed && negotiation.hasMatchResult" class="result-section success">
+    <!-- <div *ngIf="negotiation.state === 4 && negotiation.matchRevealed && negotiation.hasMatchResult" class="result-section success"> -->
+      <div *ngIf="negotiation.state === 4 && !negotiation.hasMatch" class="result-section success">
       <h3>✓ Match Found!</h3>
 
       <div class="meeting-point">
@@ -197,7 +198,8 @@
     </div>
 
     <!-- STATE 4 + NO MATCH -->
-    <div *ngIf="negotiation.state === 4 && negotiation.matchRevealed && !negotiation.hasMatchResult" class="result-section no-match">
+    <!-- <div *ngIf="negotiation.state === 4 && negotiation.matchRevealed && !negotiation.hasMatchResult" class="result-section no-match"> -->
+      <div *ngIf="negotiation.state === 4 && !negotiation.hasMatch" class="result-section no-match">
       <h3>✗ No Match Found</h3>
 
       <div class="no-match-msg">

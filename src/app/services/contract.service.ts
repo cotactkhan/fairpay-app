@@ -3,10 +3,11 @@ import { ethers } from 'ethers';
 import { WalletService } from './wallet.service';
 import { Negotiation } from '../../models/negotiation'; 
 import { environment } from '../../environments/environment';
+import abi from '../../assets/FairPay.json'
 
 const ABI = [
   'function createNegotiation(address _candidate, string _title, uint256 _deadlineDuration) returns (uint256)',
-  'function submitEmployerRange(uint256 negotiationId, bytes encryptedMin, bytes encryptedMax, bytes inputProof)',
+  'function submitEmployerRange(uint256 negotiationId, tuple(uint256 chainId, bytes32 handle) encryptedMin, tuple(uint256 chainId, bytes32 handle) encryptedMax, bytes inputProof)',
   'function submitCandidateRange(uint256 negotiationId, bytes encryptedMin, bytes encryptedMax, bytes inputProof)',
   'function getNegotiationSummary(uint256 negotiationId) view returns (tuple(uint256 negotiationId, address employer, address candidate, string title, uint8 state, uint256 createdAt, uint256 deadline, bool hasMatchResult, bool matchRevealed, uint64 meetingPoint))',
   'function getUserNegotiations(address user) view returns (uint256[])',
@@ -29,7 +30,8 @@ export class ContractService {
     // const provider = new ethers.JsonRpcProvider(rpcUrl);
     if (typeof window.ethereum !== 'undefined') {
     const provider = new ethers.BrowserProvider(window.ethereum);
-    this.contract = new ethers.Contract(environment.contractAddress, ABI, provider);
+    // this.contract = new ethers.Contract(environment.contractAddress, ABI, provider);
+    this.contract = new ethers.Contract(environment.contractAddress, abi.abi, provider);
   } else {
     throw new Error('Install MetaMask');
   }
@@ -90,9 +92,9 @@ export class ContractService {
 
   async submitEmployerRange(
     negotiationId: number,
-    encryptedMin: string,
-    encryptedMax: string,
-    proof: string
+    encryptedMin: any,
+    encryptedMax: any,
+    proof: any
   ): Promise<string> {
     const contract = this.getSignedContract();
 
@@ -152,10 +154,13 @@ export class ContractService {
     return ids.map((id: bigint) => Number(id));
   }
 
+ 
+
   async getMatchResult(id: number): Promise<{ hasMatch: boolean; meetingPoint: number }> {
     if (!this.contract) throw new Error('Contract not initialized');
 
     const result = await this.contract['getMatchResult'](id);
+    console.log('Match result from contract:', result);
     return {
       hasMatch: result.hasMatch,
       meetingPoint: Number(result.meetingPoint)

@@ -9,7 +9,7 @@ import { Injectable } from '@angular/core';
 // } from '@zama-fhe/relayer-sdk/web';
 
 // import { initSDK, createInstance, SepoliaConfig, FhevmInstance } from '@zama-fhe/relayer-sdk/bundle';
-import { SepoliaConfig, createInstance } from '@zama-fhe/relayer-sdk/bundle';
+// import { SepoliaConfig, createInstance, initSDK} from '@zama-fhe/relayer-sdk/web';
 
 @Injectable({
   providedIn: 'root',
@@ -26,8 +26,8 @@ export class FheService {
       // const { initSDK, createInstance, SepoliaConfig } = await import(
       //   '@zama-fhe/relayer-sdk/bundle'
       // );
-
-      this.instance = await createInstance(SepoliaConfig);
+      // await initSDK();
+      // this.instance = await createInstance(SepoliaConfig);
 
       // //  const { createInstance, SepoliaConfig  } = await import(
       // //   '@zama-fhe/relayer-sdk/bundle'
@@ -76,7 +76,7 @@ export class FheService {
     proof: any;
   }> {
     if (!this.instance) {
-      throw new Error('FHE not initialized');
+      throw new Error('FHE not initialized0');
     }
 
     if (minSalary > maxSalary) {
