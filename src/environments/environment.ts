@@ -17,7 +17,9 @@ export const environment = {
     // contractAddress: '0xcfb498BB46C591Ab72251eeB29E7D8dD4B985163',  // deployed on sepolia removing validate callbacks 
     // contractAddress: '0x3F15b91Ddd7f922aE144873F7851Eb906eB570CE',  // deployed on sepolia removing validate callbacks 
     // contractAddress: '0xA939dF24904a7949ecC6867D8746E6df7357C7B5',  // deployed on sepolia removing validate callbacks 
-    contractAddress: '0x08bc1b32b537a8E2F678ef95D7847255d40216Dd',  // deployed on sepolia removing validate callbacks 
+    // contractAddress: '0x08bc1b32b537a8E2F678ef95D7847255d40216Dd',  // deployed on sepolia removing validate callbacks 
+    // contractAddress: '0x4273D8001d686e1d46D9AAAAF4b69f876D1D69CE',  // deployed on sepolia removing validate callbacks 
+    contractAddress: '0x10D5Ed94272e4D4185Fea2D58E45747525939922',  // deployed on sepolia removing validate callbacks 
 
   localRpcUrl: 'http://localhost:8545',
   localChainId: 31337,

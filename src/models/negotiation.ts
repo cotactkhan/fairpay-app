@@ -57,4 +57,6 @@ export interface Negotiation {
   matchRevealed: boolean;
   meetingPoint: number;
   hasMatch?: boolean;
+  hasMatchHandle?: boolean;
+  meetingPointHandle?: boolean;
 }

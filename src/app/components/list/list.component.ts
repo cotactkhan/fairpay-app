@@ -42,7 +42,7 @@ export class ListComponent implements OnInit {
 
     try {
       const ids = await this.contractService.getUserNegotiations(this.userAddress);
-
+      console.log('Negotiation IDs:', ids);
       this.negotiations = await Promise.all(
         ids.map(id => this.contractService.getNegotiation(id))
       );

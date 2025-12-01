@@ -5,7 +5,7 @@ import { catchError, concatMap, first, map, timeout } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 const SDK_CDN_URL =
-  'https://cdn.zama.ai/relayer-sdk-js/0.2.0/relayer-sdk-js.umd.cjs';
+  'https://cdn.zama.org/relayer-sdk-js/0.3.0-5/relayer-sdk-js.umd.cjs';
 // const SDK_CDN_URL =
 // '/fairpay-app/src/assets/relayer-sdk-js.umd.js';
 
@@ -98,30 +98,43 @@ export class FheService1 {
 
     // 3. Create the instance
     // this.instance = await window.relayerSDK.createInstance(config);
+    console.log(
+      window.relayerSDK.SepoliaConfig,
+      '##############fhevm sepolia config'
+    );
+    // this.instance = await window.relayerSDK.createInstance({
+    //   // ACL_CONTRACT_ADDRESS (FHEVM Host chain)
+    //   aclContractAddress: '0x687820221192C5B662b25367F70076A37bc79b6c',
+    //   // KMS_VERIFIER_CONTRACT_ADDRESS (FHEVM Host chain)
+    //   kmsContractAddress: '0x1364cBBf2cDF5032C47d8226a6f6FBD2AFCDacAC',
+    //   // INPUT_VERIFIER_CONTRACT_ADDRESS (FHEVM Host chain)
+    //   inputVerifierContractAddress:
+    //     '0xbc91f3daD1A5F19F8390c400196e58073B6a0BC4',
+    //   // DECRYPTION_ADDRESS (Gateway chain)
+    //   verifyingContractAddressDecryption:
+    //     '0xb6E160B1ff80D67Bfe90A85eE06Ce0A2613607D1',
+    //   // INPUT_VERIFICATION_ADDRESS (Gateway chain)
+    //   verifyingContractAddressInputVerification:
+    //     '0x7048C39f048125eDa9d678AEbaDfB22F7900a29F',
+    //   // FHEVM Host chain id
+    //   chainId: 11155111,
+    //   // Gateway chain id
+    //   gatewayChainId: 55815,
+    //   // Optional RPC provider to host chain
+    //   // network: "https://eth-sepolia.public.blastapi.io",
+    //   network: window.ethereum,
+    //   // Relayer URL
+    //   relayerUrl: 'https://relayer.testnet.zama.cloud',
 
+    // });
+    console.log("my sepolia config")
+    console.log({...window.relayerSDK.SepoliaConfig})
+    console.log("mid")
+    console.log("end")
     this.instance = await window.relayerSDK.createInstance({
-      // ACL_CONTRACT_ADDRESS (FHEVM Host chain)
-      aclContractAddress: '0x687820221192C5B662b25367F70076A37bc79b6c',
-      // KMS_VERIFIER_CONTRACT_ADDRESS (FHEVM Host chain)
-      kmsContractAddress: '0x1364cBBf2cDF5032C47d8226a6f6FBD2AFCDacAC',
-      // INPUT_VERIFIER_CONTRACT_ADDRESS (FHEVM Host chain)
-      inputVerifierContractAddress:
-        '0xbc91f3daD1A5F19F8390c400196e58073B6a0BC4',
-      // DECRYPTION_ADDRESS (Gateway chain)
-      verifyingContractAddressDecryption:
-        '0xb6E160B1ff80D67Bfe90A85eE06Ce0A2613607D1',
-      // INPUT_VERIFICATION_ADDRESS (Gateway chain)
-      verifyingContractAddressInputVerification:
-        '0x7048C39f048125eDa9d678AEbaDfB22F7900a29F',
-      // FHEVM Host chain id
-      chainId: 11155111,
-      // Gateway chain id
-      gatewayChainId: 55815,
-      // Optional RPC provider to host chain
-      // network: "https://eth-sepolia.public.blastapi.io",
-      network: window.ethereum,
-      // Relayer URL
-      relayerUrl: 'https://relayer.testnet.zama.cloud',
+      ...window.relayerSDK.SepoliaConfig,
+      network: window.ethereum, // override/add the network field
+      gatewayUrl: "https://gateway.testnet.zama.ai", // NEW in v0.9
     });
 
     // this.instance = await window.relayerSDK.createInstance(
@@ -514,6 +527,8 @@ export class FheService1 {
     }
   }
 
+ 
+
   async diagnoseContract(contractAddress: string): Promise<void> {
     console.log('=== Contract Diagnosis ===');
 
@@ -555,6 +570,35 @@ export class FheService1 {
     } catch (e) {
       console.error('✗ Cannot create input:', e);
     }
+  }
+
+  async decryptAndGetProof(
+    handles: string[],
+    requestId?: number
+  ): Promise<{
+    plaintexts: (boolean | bigint)[];
+    proof: `0x${string}`;
+  }> {
+    if (!this.instance) throw new Error('FHEVM instance not initialized');
+
+    // Use a proper unique requestId (Date.now() is fine)
+    const rid = requestId ?? Date.now();
+
+    // The relayer SDK supports batch decryption via .decrypt()
+    // It automatically registers the requestId internally
+    const plaintexts: (boolean | bigint)[] = [];
+
+    for (const handle of handles) {
+      // handle is bytes32 string like "0xabc123..."
+      const pt = await this.instance.decrypt(handle);
+      plaintexts.push(pt);
+    }
+
+    // Get the re-encryption proof for this requestId
+    // This is the same proof expected by FHE.checkSignatures()
+    const proof = this.instance.getReencryptionProof(rid);
+
+    return { plaintexts, proof: proof as `0x${string}` };
   }
 
   // async encryptRange(
@@ -604,4 +648,87 @@ export class FheService1 {
   //     throw error;
   //   }
   // }
+
+
+  async decryptMatchResults(
+  hasMatchHandle: string,
+  meetingPointHandle: string,
+  requestId: number
+): Promise<{
+  hasMatch: boolean;
+  meetingPoint: bigint;
+  proof: string;
+}> {
+  if (!this.instance) throw new Error('FHEVM instance not initialized');
+  
+  console.log('Attempting to decrypt handles:', {
+    hasMatchHandle,
+    meetingPointHandle,
+    requestId
+  });
+  
+  try {
+    // Decrypt both values
+    // const hasMatchDecrypted = await this.instance.decrypt(hasMatchHandle);
+    const hasMatchDecrypted = await this.instance.publicDecrypt([hasMatchHandle]);
+    // const meetingPointDecrypted = await this.instance.decrypt(meetingPointHandle);
+    const meetingPointDecrypted = await this.instance.publicDecrypt([meetingPointHandle]);
+    
+    console.log('Decryption successful:', {
+      hasMatch: hasMatchDecrypted,
+      meetingPoint: meetingPointDecrypted.toString()
+    });
+    
+    // Get the proof for this decryption
+    const proof = this.instance.getReencryptionProof(requestId);
+    
+    return {
+      hasMatch: Boolean(hasMatchDecrypted),
+      meetingPoint: BigInt(meetingPointDecrypted),
+      proof: proof as string
+    };
+  } catch (error: any) {
+    console.error('Decryption error:', error);
+    throw new Error(`Decryption failed: ${error.message}`);
+  }
+}
+
+
+async publicDecryptHandles(
+  handles: string[],
+  contractAddress: string
+): Promise<{
+  cleartexts: any[];
+  proof: string;
+  requestId: number;
+}> {
+  if (!this.instance) throw new Error('FHEVM instance not initialized');
+  
+  console.log('Starting public decryption:', { handles, contractAddress });
+  
+  try {
+    const requestId = Date.now();
+    
+    // Call publicDecrypt on the instance
+    // This contacts the Zama Relayer/Gateway
+    const result = await this.instance.publicDecrypt(handles, contractAddress);
+    
+    console.log('Decryption result:', result);
+    
+    // Extract the data - format may vary
+    const cleartexts = Array.isArray(result) ? result : (result.plaintexts || result.cleartexts || []);
+    const proof = result.proof || result.signature || '0x';
+    
+    return {
+      cleartexts,
+      proof,
+      requestId
+    };
+  } catch (error: any) {
+    console.error('Public decryption error:', error);
+    throw error;
+  }
+}
+
+
 }
